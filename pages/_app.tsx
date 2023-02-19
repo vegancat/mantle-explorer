@@ -6,8 +6,64 @@ import CssBaseline from "@mui/material/CssBaseline";
 import { CacheProvider, EmotionCache } from "@emotion/react";
 import theme from "../utils/theme";
 import createEmotionCache from "../utils/createEmotionCache";
+import "@rainbow-me/rainbowkit/styles.css";
+import { RainbowKitProvider, getDefaultWallets } from "@rainbow-me/rainbowkit";
 
-// Client-side cache, shared for the whole session of the user in the browser.
+import { configureChains, createClient, WagmiConfig } from "wagmi";
+import { jsonRpcProvider } from "wagmi/providers/jsonRpc";
+
+const mantleChain = {
+  id: 5001,
+  name: "Mantle",
+  network: "Mantle",
+  iconBackground: "#000",
+  nativeCurrency: {
+    decimals: 18,
+    name: "Mantle",
+    symbol: "BIT",
+  },
+  rpcUrls: {
+    default: {
+      http: ["https://rpc.testnet.mantle.xyz"],
+    },
+    public: {
+      http: ["https://rpc.testnet.mantle.xyz"],
+    },
+  },
+  blockExplorers: {
+    default: {
+      name: "Testnet Explorer",
+      url: "https://explorer.testnet.mantle.xyz",
+    },
+  },
+  testnet: true,
+};
+
+const { chains, provider } = configureChains(
+  [mantleChain],
+  [
+    jsonRpcProvider({
+      rpc: (chain) => ({ http: chain.rpcUrls.default.http[0] }),
+    }),
+  ]
+);
+
+const { connectors } = getDefaultWallets({
+  appName: "Nifty Minter",
+  chains,
+});
+
+// *: remove if needed
+const niftyMinterApp = {
+  appName: "Nifty Minter",
+};
+
+const wagmiClient = createClient({
+  autoConnect: true,
+  provider,
+  connectors,
+});
+
 const clientSideEmotionCache = createEmotionCache();
 
 interface MyAppProps extends AppProps {
@@ -21,11 +77,14 @@ export default function MyApp(props: MyAppProps) {
       <Head>
         <meta name="viewport" content="initial-scale=1, width=device-width" />
       </Head>
-      <ThemeProvider theme={theme}>
-        {/* CssBaseline kickstart an elegant, consistent, and simple baseline to build upon. */}
-        <CssBaseline />
-        <Component {...pageProps} />
-      </ThemeProvider>
+      <WagmiConfig client={wagmiClient}>
+        <RainbowKitProvider appInfo={niftyMinterApp} chains={chains}>
+          <ThemeProvider theme={theme}>
+            <CssBaseline />
+            <Component {...pageProps} />
+          </ThemeProvider>
+        </RainbowKitProvider>
+      </WagmiConfig>
     </CacheProvider>
   );
 }
