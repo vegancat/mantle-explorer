@@ -9,7 +9,7 @@ import createEmotionCache from "../utils/createEmotionCache";
 import "@rainbow-me/rainbowkit/styles.css";
 import { RainbowKitProvider, getDefaultWallets } from "@rainbow-me/rainbowkit";
 
-import { configureChains, createClient, WagmiConfig } from "wagmi";
+import { configureChains, createClient, WagmiConfig, Chain } from "wagmi";
 import { jsonRpcProvider } from "wagmi/providers/jsonRpc";
 
 const mantleChain = {
@@ -43,19 +43,19 @@ const { chains, provider } = configureChains(
   [mantleChain],
   [
     jsonRpcProvider({
-      rpc: (chain) => ({ http: chain.rpcUrls.default.http[0] }),
+      rpc: (chain: Chain) => ({ http: chain.rpcUrls.default.http[0] }),
     }),
   ]
 );
 
 const { connectors } = getDefaultWallets({
-  appName: "Nifty Minter",
+  appName: "MantleScan",
   chains,
 });
 
 // *: remove if needed
-const niftyMinterApp = {
-  appName: "Nifty Minter",
+const mantleScanApp = {
+  appName: "Mantle Scan",
 };
 
 const wagmiClient = createClient({
@@ -78,7 +78,7 @@ export default function MyApp(props: MyAppProps) {
         <meta name="viewport" content="initial-scale=1, width=device-width" />
       </Head>
       <WagmiConfig client={wagmiClient}>
-        <RainbowKitProvider appInfo={niftyMinterApp} chains={chains}>
+        <RainbowKitProvider appInfo={mantleScanApp} chains={chains}>
           <ThemeProvider theme={theme}>
             <CssBaseline />
             <Component {...pageProps} />
