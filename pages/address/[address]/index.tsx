@@ -138,7 +138,7 @@ const AddressDetails = (props: Props) => {
         },
       });
 
-      setBitBalance(+(parseInt(data.result, 16) / 10 ** 18).toPrecision(2));
+      setBitBalance(+(parseInt(data.result, 16) / 10 ** 18).toFixed(2));
     };
 
     const fetchListOfTokens = async () => {
