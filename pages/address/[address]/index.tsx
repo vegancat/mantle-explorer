@@ -22,10 +22,62 @@ type FetchedToken = {
   type: string;
 };
 
+type FetchedTransaction = {
+  blockHash: string;
+  blockNumber: string;
+  confirmations: string;
+  contractAddress: string;
+  cumulativeGasUsed: string;
+  from: string;
+  gas: string;
+  gasPrice: string;
+  gasUsed: string;
+  hash: string;
+  input: string;
+  isError: string;
+  l1Fee: string;
+  l1FeeScalar: string;
+  l1GasPrice: string;
+  l1GasUsed: string;
+  nonce: string;
+  timeStamp: string;
+  to: string;
+  transactionIndex: string;
+  txreceipt_status: string;
+  value: string;
+};
+
+type FetchedTransfer = {
+  value: string;
+  blockHash: string;
+  blockNumber: string;
+  confirmations: string;
+  contractAddress: string;
+  cumulativeGasUsed: string;
+  from: string;
+  gas: string;
+  gasPrice: string;
+  gasUsed: string;
+  hash: string;
+  input: string;
+  logIndex: string;
+  nonce: string;
+  timeStamp: string;
+  to: string;
+  tokenDecimal: string;
+  tokenName: string;
+  tokenSymbol: string;
+  transactionIndex: string;
+};
+
 const AddressDetails = (props: Props) => {
   const [openModal, setOpenModal] = useState(false);
   const [bitBalance, setBitBalance] = useState(0);
   const [listOfTokens, setListOfTokens] = useState<FetchedToken[]>([]);
+  const [listOfTransfers, setListOfTransfers] = useState<FetchedTransfer[]>([]);
+  const [listOfTransactions, setListOfTransactions] = useState<
+    FetchedTransaction[]
+  >([]);
   const [isAddressValid, setIsAddressValid] = useState(true);
 
   let {
@@ -55,6 +107,27 @@ const AddressDetails = (props: Props) => {
     address,
   });
 
+  const [totalGasUsed, totalTransactionsCount, averageGasPerTx] =
+    useMemo(() => {
+      let totalGasUsed = listOfTransactions.reduce((total, current) => {
+        return total + +current.cumulativeGasUsed;
+      }, 0);
+
+      totalGasUsed += listOfTransfers.reduce((total, current) => {
+        return total + +current.cumulativeGasUsed;
+      }, 0);
+
+      let totalTransactionsCount =
+        listOfTransactions.length + listOfTransfers.length;
+
+      let averageGasPerTx =
+        totalTransactionsCount === 0
+          ? 0
+          : +(totalGasUsed / totalTransactionsCount).toFixed(2);
+
+      return [totalGasUsed, totalTransactionsCount, averageGasPerTx];
+    }, [listOfTransfers, listOfTransactions]);
+
   useEffect(() => {
     const fetchBitBalance = async () => {
       const { data } = await mantleExplorerApiInstance.post("", null, {
@@ -76,26 +149,47 @@ const AddressDetails = (props: Props) => {
           address: address,
         },
       });
-      console.log("🚀 ~ file: index.tsx:63 ~ fetchListOfTokens ~ data", data);
 
-      setListOfTokens(data.result);
+      if (data.status === "1") {
+        setListOfTokens(data.result);
+      }
     };
 
     const fetchTotalTransactions = async () => {
-      const { data } = await mantleExplorerApiInstance.post("", null, {
-        params: {
-          module: "account",
-          action: "tokenlist",
-          address: address,
-        },
-      });
-      console.log("🚀 ~ file: index.tsx:63 ~ fetchListOfTokens ~ data", data);
+      const { data: TransactionsData } = await mantleExplorerApiInstance.post(
+        "",
+        null,
+        {
+          params: {
+            module: "account",
+            action: "txlist",
+            address: address,
+          },
+        }
+      );
 
-      setListOfTokens(data.result);
+      if (TransactionsData.status === "1") {
+        setListOfTransactions(TransactionsData.result);
+      }
+      const { data: tokenTransferData } = await mantleExplorerApiInstance.post(
+        "",
+        null,
+        {
+          params: {
+            module: "account",
+            action: "tokentx",
+            address: address,
+          },
+        }
+      );
+      if (tokenTransferData.status === "1") {
+        setListOfTransfers(tokenTransferData.result);
+      }
     };
 
     fetchBitBalance();
     fetchListOfTokens();
+    fetchTotalTransactions();
   }, [address]);
 
   const handleOpen = useCallback(() => {
@@ -149,13 +243,25 @@ const AddressDetails = (props: Props) => {
               </Box>
             ))}
           </Box>
-          <Box>Total Transactions</Box>
-          <Box>Total Gas spent</Box>
-          <Box>Average Gas per Tx</Box>
+          <Box>Total Transactions: {totalTransactionsCount}</Box>
+          <Box>Total Gas spent: {totalGasUsed}</Box>
+          <Box>Average Gas per Tx: {averageGasPerTx}</Box>
         </Box>
         <Box>
           {/* <Box>NFTs</Box> */}
+          <Box>Transfers</Box>
+          {listOfTransfers.map((transfer) => (
+            <Box key={transfer.hash}>
+              {transfer.from} -`&gt;` {transfer.to} : {transfer.value}
+            </Box>
+          ))}
+
           <Box>Transactions</Box>
+          {listOfTransactions.map((tx) => (
+            <Box key={tx.hash}>
+              {tx.from} -`&gt;` {tx.to} : {tx.value}
+            </Box>
+          ))}
         </Box>
       </Box>
     </Box>
