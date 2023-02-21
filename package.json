@@ -27,12 +27,14 @@
     "mongodb": "^5.0.1",
     "mongoose": "^6.9.2",
     "next": "latest",
+    "qrcode": "^1.5.1",
     "react": "latest",
     "react-dom": "latest",
     "wagmi": "^0.11.0"
   },
   "devDependencies": {
     "@types/node": "latest",
+    "@types/qrcode": "^1.5.0",
     "@types/react": "latest",
     "@types/react-dom": "latest",
     "eslint": "latest",

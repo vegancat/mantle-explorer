@@ -1,13 +1,26 @@
-import { Box } from "@mui/material";
-import React from "react";
+import { Box, Button } from "@mui/material";
+import React, { useState, useMemo, useCallback } from "react";
 import { useRouter } from "next/router";
 import Head from "next/head";
+import Modal from "../../../components/Modal";
+import { APIUrl, PageUrl } from "../../../constants";
+import QrCode from "../../../components/QrCode";
 
 type Props = {};
 
 const AddressDetails = (props: Props) => {
-  const router = useRouter();
-  const { address } = router.query;
+  const [openModal, setOpenModal] = useState(false);
+
+  const {
+    asPath,
+    query: { address },
+  } = useRouter();
+
+  const handleOpen = useCallback(() => {
+    setOpenModal(true);
+  }, [setOpenModal]);
+
+  const qrCodeUrl = useMemo(() => `${PageUrl}${asPath}`, [asPath]);
 
   return (
     <Box>
@@ -21,6 +34,9 @@ const AddressDetails = (props: Props) => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       {/* <Box>Address Details: address: {`${address}`}</Box> */}
+      {/* <Modal open={openModal} setOpen={setOpenModal} /> */}
+      <QrCode open={openModal} setOpen={setOpenModal} url={qrCodeUrl} />
+
       <Box
         sx={{
           padding: 2,
@@ -30,7 +46,9 @@ const AddressDetails = (props: Props) => {
         }}
       >
         <Box>
-          <Box>QR code to current page</Box>
+          <Box>
+            <Button onClick={handleOpen}>QR code</Button>
+          </Box>
           <Box>Address in hex format</Box>
           <Box>Address image icon | possible Ens name or avatar</Box>
           <Box>Bit balance</Box>
