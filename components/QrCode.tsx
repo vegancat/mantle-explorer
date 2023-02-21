@@ -1,9 +1,8 @@
-import Box from "@mui/material/Box/Box";
 import React, { PropsWithChildren, useState, useEffect } from "react";
 import CustomModal from "./Modal";
 import qrCode from "qrcode";
 import Image from "next/image";
-import Typography from "@mui/material/Typography";
+import { Box } from "@mui/material";
 
 type Props = {
   url: string;
@@ -26,9 +25,6 @@ const QrCode = ({ url, ...otherProps }: PropsWithChildren<Props>) => {
     <Box>
       <CustomModal {...otherProps}>
         <Image src={imgSrc} alt="link QR code" fill />
-        <Typography textAlign={"center"} sx={{ pt: 2 }}>
-          Scan this with your camera to open this page
-        </Typography>
       </CustomModal>
     </Box>
   );
