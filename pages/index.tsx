@@ -16,7 +16,7 @@ export default function Home() {
   // }, [l2RpcProvider]);
 
   return (
-    <>
+    <Box>
       <Head>
         <title>Mantle Scan</title>
         <meta
@@ -28,6 +28,6 @@ export default function Home() {
       </Head>
 
       <Box>Home page</Box>
-    </>
+    </Box>
   );
 }
