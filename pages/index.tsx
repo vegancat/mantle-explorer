@@ -3,11 +3,14 @@ import Head from "next/head";
 import { Box } from "@mui/material";
 import { asL2Provider } from "@mantleio/sdk";
 import { ethers } from "ethers";
+import { useRouter } from "next/router";
 
 export default function Home() {
-  const l2RpcProvider = asL2Provider(
-    new ethers.providers.JsonRpcProvider(process.env.L2_RPC)
-  );
+  const { push } = useRouter();
+
+  useEffect(() => {
+    push("/address");
+  }, []);
 
   // useEffect(() => {
   //   const res = l2RpcProvider._getFastBlockNumber();
