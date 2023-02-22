@@ -8,6 +8,14 @@ Mantle Scan is all about better UX!
 - Token holdings of an address
 - NFTs of an address
 
+# Demo Website
+
+[MantelScan](https://mantlescan.vercel.app)
+
+# Demo video
+
+[Demo Video/Walkthrough](https://youtu.be/S9H_n-HSg3Q)
+
 ## Cool pics instead of raw addresses
 
 We decided to create an API that accepts an ETH address and a variant and produces a unique pic for that address!
