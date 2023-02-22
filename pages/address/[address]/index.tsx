@@ -258,10 +258,16 @@ const AddressDetails = (props: Props) => {
             />
           </Box>
           <Box>
-            {/* <Image
-              src={ethAddressToPNG(address as string)}
+            <Image
+              src={`${
+                process.env.NODE_ENV === "development"
+                  ? "http://localhost:3000"
+                  : "https://mantlescan.vercel.app"
+              }/api/addrToPng?address=${address}&&variant=cat`}
               alt="Eth address in PNG format"
-            /> */}
+              width={90}
+              height={60}
+            />
           </Box>
           <Box>Address in hex format: {address}</Box>
           <Box>
