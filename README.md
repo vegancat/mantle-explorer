@@ -8,6 +8,16 @@ Mantle Scan is all about better UX!
 - Token holdings of an address
 - NFTs of an address
 
+## Cool pics instead of raw addresses
+
+We decided to create an API that accepts an ETH address and a variant and produces a unique pic for that address!
+
+We first add "0F" to end of and address, so we have 40 (from eth address) + 2 (added by api) = 42 chars!
+
+42 is a factor of 6, but why 6?! well if we put six hex chars beside each Other we have a unique color!
+
+API is accessible through: `https://mantlescan.vercel.app/api/addrToPng?address={ethAddress}&&variant={variant}`. currently only variant supported is cat but more to be added!
+
 # Tech Used
 
 - [Rainbow wallet Adapter](https://github.com/rainbow-me/rainbowkit)

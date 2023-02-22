@@ -257,6 +257,12 @@ const AddressDetails = (props: Props) => {
               fontSize="large"
             />
           </Box>
+          <Box>
+            {/* <Image
+              src={ethAddressToPNG(address as string)}
+              alt="Eth address in PNG format"
+            /> */}
+          </Box>
           <Box>Address in hex format: {address}</Box>
           <Box>
             {/* TODO: Render ens part conditionally  **/}

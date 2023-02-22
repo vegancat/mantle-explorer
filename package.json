@@ -21,6 +21,7 @@
     "@mui/material": "latest",
     "@next/font": "latest",
     "@rainbow-me/rainbowkit": "^0.11.0",
+    "@vercel/og": "^0.1.0",
     "axios": "^1.3.3",
     "ethers": "^5.0.0",
     "framer-motion": "^9.0.4",
@@ -36,6 +37,7 @@
   "devDependencies": {
     "@types/lodash": "^4.14.191",
     "@types/node": "latest",
+    "@types/pngjs": "^6.0.1",
     "@types/qrcode": "^1.5.0",
     "@types/react": "latest",
     "@types/react-dom": "latest",
