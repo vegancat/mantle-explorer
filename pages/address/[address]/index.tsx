@@ -10,6 +10,7 @@ import Image from "next/image";
 import _ from "lodash";
 import { isAddress } from "@ethersproject/address";
 import mantleExplorerApiInstance from "../../../axios-instances/mantleExplorerApi";
+import Pagination from "../../../components/Pagination";
 
 type Props = {};
 
@@ -79,6 +80,8 @@ const AddressDetails = (props: Props) => {
     FetchedTransaction[]
   >([]);
   const [isAddressValid, setIsAddressValid] = useState(true);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [isNextActive, setIsNextActive] = useState(true);
 
   let {
     asPath,
@@ -150,6 +153,11 @@ const AddressDetails = (props: Props) => {
       }
     };
 
+    fetchBitBalance();
+    fetchListOfTokens();
+  }, [address]);
+
+  useEffect(() => {
     const fetchTotalTransactions = async () => {
       const { data: TransactionsData } = await mantleExplorerApiInstance.post(
         "",
@@ -159,11 +167,28 @@ const AddressDetails = (props: Props) => {
             module: "account",
             action: "txlist",
             address: address,
-            offset: 20,
-            page: 1,
+            offset: 10,
+            page: currentPage,
           },
         }
       );
+
+      const { data: NextPageTransactionsData } =
+        await mantleExplorerApiInstance.post("", null, {
+          params: {
+            module: "account",
+            action: "txlist",
+            address: address,
+            offset: 10,
+            page: currentPage + 1,
+          },
+        });
+
+      if (NextPageTransactionsData.result.length === 0) {
+        setIsNextActive(false);
+      } else {
+        setIsNextActive(true);
+      }
 
       if (TransactionsData.status === "1") {
         setListOfTransactions(TransactionsData.result);
@@ -188,10 +213,8 @@ const AddressDetails = (props: Props) => {
       // }
     };
 
-    fetchBitBalance();
-    fetchListOfTokens();
     fetchTotalTransactions();
-  }, [address]);
+  }, [address, currentPage]);
 
   const handleOpen = useCallback(() => {
     setOpenModal(true);
@@ -259,11 +282,20 @@ const AddressDetails = (props: Props) => {
           ))} */}
 
           <Box>Transactions</Box>
-          {listOfTransactions.map((tx) => (
-            <Box key={tx.hash}>
-              {tx.from} -&gt; {tx.to} : {tx.value}
-            </Box>
-          ))}
+          <Box>
+            {listOfTransactions.map((tx) => (
+              <Box key={tx.hash}>
+                {tx.from} -&gt; {tx.to} : {tx.value}
+              </Box>
+            ))}
+          </Box>
+          <Box>
+            <Pagination
+              currentPage={currentPage}
+              setPage={setCurrentPage}
+              isNextActive={isNextActive}
+            />
+          </Box>
         </Box>
       </Box>
     </Box>
