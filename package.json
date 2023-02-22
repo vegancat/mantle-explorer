@@ -17,7 +17,7 @@
     "@emotion/server": "latest",
     "@emotion/styled": "latest",
     "@mantleio/sdk": "^0.1.4",
-    "@mui/icons-material": "latest",
+    "@mui/icons-material": "^5.11.9",
     "@mui/material": "latest",
     "@next/font": "latest",
     "@rainbow-me/rainbowkit": "^0.11.0",

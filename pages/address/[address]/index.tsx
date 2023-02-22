@@ -11,6 +11,7 @@ import _ from "lodash";
 import { isAddress } from "@ethersproject/address";
 import mantleExplorerApiInstance from "../../../axios-instances/mantleExplorerApi";
 import Pagination from "../../../components/Pagination";
+import QrCodeIcon from "@mui/icons-material/QrCode";
 
 type Props = {};
 
@@ -82,6 +83,7 @@ const AddressDetails = (props: Props) => {
   const [isAddressValid, setIsAddressValid] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
   const [isNextActive, setIsNextActive] = useState(true);
+  const [isTxsLoading, setIsTxsLoading] = useState(false);
 
   let {
     asPath,
@@ -159,6 +161,7 @@ const AddressDetails = (props: Props) => {
 
   useEffect(() => {
     const fetchTotalTransactions = async () => {
+      setIsTxsLoading(true);
       const { data: TransactionsData } = await mantleExplorerApiInstance.post(
         "",
         null,
@@ -193,6 +196,8 @@ const AddressDetails = (props: Props) => {
       if (TransactionsData.status === "1") {
         setListOfTransactions(TransactionsData.result);
       }
+
+      setIsTxsLoading(false);
 
       // TODO: there is a problem with API for paging results, add this when problem is gone
       // const { data: tokenTransferData } = await mantleExplorerApiInstance.post(
@@ -245,8 +250,12 @@ const AddressDetails = (props: Props) => {
         }}
       >
         <Box>
-          <Box>
-            <Button onClick={handleOpen}>QR code</Button>
+          <Box sx={{ display: "flex", justifyContent: "end" }}>
+            <QrCodeIcon
+              sx={{ cursor: "pointer" }}
+              onClick={handleOpen}
+              fontSize="large"
+            />
           </Box>
           <Box>Address in hex format: {address}</Box>
           <Box>
@@ -294,6 +303,7 @@ const AddressDetails = (props: Props) => {
               currentPage={currentPage}
               setPage={setCurrentPage}
               isNextActive={isNextActive}
+              isTxsLoading={isTxsLoading}
             />
           </Box>
         </Box>
