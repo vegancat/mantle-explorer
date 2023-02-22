@@ -74,7 +74,7 @@ const AddressDetails = (props: Props) => {
   const [openModal, setOpenModal] = useState(false);
   const [bitBalance, setBitBalance] = useState(0);
   const [listOfTokens, setListOfTokens] = useState<FetchedToken[]>([]);
-  const [listOfTransfers, setListOfTransfers] = useState<FetchedTransfer[]>([]);
+  // const [listOfTransfers, setListOfTransfers] = useState<FetchedTransfer[]>([]);
   const [listOfTransactions, setListOfTransactions] = useState<
     FetchedTransaction[]
   >([]);
@@ -113,12 +113,7 @@ const AddressDetails = (props: Props) => {
         return total + +current.cumulativeGasUsed;
       }, 0);
 
-      totalGasUsed += listOfTransfers.reduce((total, current) => {
-        return total + +current.cumulativeGasUsed;
-      }, 0);
-
-      let totalTransactionsCount =
-        listOfTransactions.length + listOfTransfers.length;
+      let totalTransactionsCount = listOfTransactions.length;
 
       let averageGasPerTx =
         totalTransactionsCount === 0
@@ -126,7 +121,7 @@ const AddressDetails = (props: Props) => {
           : +(totalGasUsed / totalTransactionsCount).toFixed(2);
 
       return [totalGasUsed, totalTransactionsCount, averageGasPerTx];
-    }, [listOfTransfers, listOfTransactions]);
+    }, [listOfTransactions]);
 
   useEffect(() => {
     const fetchBitBalance = async () => {
@@ -164,6 +159,8 @@ const AddressDetails = (props: Props) => {
             module: "account",
             action: "txlist",
             address: address,
+            offset: 20,
+            page: 1,
           },
         }
       );
@@ -171,20 +168,24 @@ const AddressDetails = (props: Props) => {
       if (TransactionsData.status === "1") {
         setListOfTransactions(TransactionsData.result);
       }
-      const { data: tokenTransferData } = await mantleExplorerApiInstance.post(
-        "",
-        null,
-        {
-          params: {
-            module: "account",
-            action: "tokentx",
-            address: address,
-          },
-        }
-      );
-      if (tokenTransferData.status === "1") {
-        setListOfTransfers(tokenTransferData.result);
-      }
+
+      // TODO: there is a problem with API for paging results, add this when problem is gone
+      // const { data: tokenTransferData } = await mantleExplorerApiInstance.post(
+      //   "",
+      //   null,
+      //   {
+      //     params: {
+      //       module: "account",
+      //       action: "tokentx",
+      //       address: address,
+      //       offset: 20,
+      //       page: 1,
+      //     },
+      //   }
+      // );
+      // if (tokenTransferData.status === "1") {
+      //   setListOfTransfers(tokenTransferData.result);
+      // }
     };
 
     fetchBitBalance();
@@ -248,18 +249,19 @@ const AddressDetails = (props: Props) => {
           <Box>Average Gas per Tx: {averageGasPerTx}</Box>
         </Box>
         <Box>
+          {/* TODO: Add NFT and transfer support when api supports those **/}
           {/* <Box>NFTs</Box> */}
-          <Box>Transfers</Box>
+          {/* <Box>Transfers</Box>
           {listOfTransfers.map((transfer) => (
             <Box key={transfer.hash}>
               {transfer.from} -`&gt;` {transfer.to} : {transfer.value}
             </Box>
-          ))}
+          ))} */}
 
           <Box>Transactions</Box>
           {listOfTransactions.map((tx) => (
             <Box key={tx.hash}>
-              {tx.from} -`&gt;` {tx.to} : {tx.value}
+              {tx.from} -&gt; {tx.to} : {tx.value}
             </Box>
           ))}
         </Box>
